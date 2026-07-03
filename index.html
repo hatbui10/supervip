@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lớp SUPER VIP</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+body { background-color: #050508; color: #e0e0e6; padding: 30px 3px 20px 3px; }
+h2, h3 { text-align: center; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; }
+h2 { color: #00f0ff; text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); font-size: 1.4rem; }
+h3 { color: #ff007f; text-shadow: 0 0 10px rgba(255, 0, 127, 0.5); font-size: 1.1rem; }
+.class-stats { text-align: center; color: #ffd700; font-size: 0.9rem; margin-bottom: 15px; font-weight: bold; }
+.class-panel { background: #0a0a14; border: 1px solid #00f0ff; border-radius: 6px; padding: 15px 8px; box-shadow: 0 0 15px rgba(0, 240, 255, 0.15); }
+.add-student-box { display: flex; flex-direction: column; gap: 10px; background: #0d0d1a; border: 1px solid #ffd700; border-radius: 4px; padding: 12px 10px; margin-bottom: 15px; }
+.add-student-box input { width: 100%; background: #050508; border: 1px solid #333; color: #fff; padding: 12px 10px; font-size: 0.9rem; border-radius: 4px; outline: none; }
+.btn-add { background: #ffd700; color: #000; border: none; padding: 12px; font-weight: bold; font-size: 0.9rem; border-radius: 4px; cursor: pointer; text-transform: uppercase; }
+.absent-section { background: rgba(255, 0, 127, 0.05); border: 1px dashed #ff007f; border-radius: 4px; padding: 10px; margin-bottom: 20px; }
+.absent-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.absent-title { color: #ff007f; font-weight: bold; font-size: 0.9rem; }
+.copy-btn { background: #ff007f; color: #fff; border: none; padding: 6px 12px; font-size: 0.8rem; font-weight: bold; border-radius: 3px; cursor: pointer; box-shadow: 0 0 8px #ff007f; }
+.absent-list { list-style: none; font-size: 0.9rem; color: #ff55a5; line-height: 1.4; }
+.absent-list li { padding: 3px 0; border-bottom: 1px solid rgba(255, 0, 127, 0.1); }
+.student-list { display: flex; flex-direction: column; gap: 10px; }
+.student-card { background: #121224; border: 1px solid #333; border-left: 4px solid #00f0ff; border-radius: 4px; padding: 12px 10px; display: flex; flex-direction: column; gap: 10px; }
+.student-card.status-absent { border-left-color: #ff007f; background: #1a0813; }
+.student-card.status-present { border-left-color: #00ff66; background: #081a10; }
+.student-info-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; border-bottom: 1px solid #222; padding-bottom: 6px; }
+.student-meta { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.student-name { font-weight: bold; font-size: 0.95rem; color: #fff; }
+.student-phone { font-size: 0.8rem; color: #888; }
+.student-actions-right { display: flex; gap: 5px; }
+.btn-call { background: #ffd700; color: #000; padding: 8px 12px; font-size: 0.9rem; border: none; border-radius: 4px; cursor: pointer; box-shadow: 0 0 5px #ffd700; }
+.btn-delete { background: #4a0000; color: #ff3333; border: 1px solid #ff3333; padding: 8px 10px; font-size: 0.9rem; border-radius: 4px; cursor: pointer; }
+.student-controls-row { display: flex; gap: 6px; align-items: center; }
+.btn-action { flex: 1; padding: 10px 3px; font-size: 0.8rem; font-weight: bold; border: none; border-radius: 3px; cursor: pointer; text-align: center; color: #fff; background: #333; }
+.btn-absent { background: #4a0025; color: #ff007f; border: 1px solid #ff007f; }
+.btn-absent.active { background: #ff007f; color: #fff; box-shadow: 0 0 10px #ff007f; }
+.btn-present { background: #003311; color: #00ff66; border: 1px solid #00ff66; }
+.btn-present.active { background: #00ff66; color: #000; box-shadow: 0 0 10px #00ff66; }
+.note-select { flex: 1.5; background: #1a1a3a; color: #00f0ff; border: 1px solid #00f0ff; padding: 9px 3px; font-size: 0.8rem; border-radius: 3px; outline: none; }
+</style>
+</head>
+<body>
+<h2>Lớp</h2>
+<div class="class-stats" id="classStats">Sĩ số: 0 | Có mặt: 0 | Vắng: 0</div>
+<div class="class-panel">
+<h3>Danh Sách: SUPER VIP</h3>
+<br>
+<div class="add-student-box">
+<input type="text" id="newStudentName" placeholder="Dòng 1: Nhập họ và tên...">
+<input type="tel" id="newStudentPhone" placeholder="Dòng 2: Nhập số điện thoại...">
+<button class="btn-add" onclick="addNewStudent()">+ Thêm vào danh sách</button>
+</div>
+<div class="absent-section">
+<div class="absent-header">
+<span class="absent-title">DANH SÁCH VẮNG </span>
+<button class="copy-btn" onclick="copyAbsentList()">Copy</button>
+</div>
+<ul class="absent-list" id="absentList"><li><em>Chưa có học sinh vắng</em></li></ul>
+</div>
+<div class="student-list" id="studentList"></div>
+</div>
+<script>
+const defaultStudents = [
+    {
+        "id": 1,
+        "name": "Nguyễn Giản Long Vũ",
+        "phone": "0989882688",
+        "status": "present",
+        "note": ""
+    },
+    {
+        "id": 2,
+        "name": "Nguyễn An Như (Cún)",
+        "phone": "0964243909",
+        "status": "present",
+        "note": ""
+    },
+    {
+        "id": 3,
+        "name": "Lưu Gia Bảo",
+        "phone": "0974125490",
+        "status": "present",
+        "note": ""
+    },
+    {
+        "id": 4,
+        "name": "Đỗ Ngọc Bảo Anh",
+        "phone": "0932203210",
+        "status": "present",
+        "note": ""
+    },
+    {
+        "id": 5,
+        "name": "Nguyễn Anh Thư",
+        "phone": "0389968457",
+        "status": "present",
+        "note": ""
+    },
+    {
+        "id": 6,
+        "name": "Âu Sơn Bách",
+        "phone": "0902232838",
+        "status": "present",
+        "note": ""
+    },
+    {
+        "id": 7,
+        "name": "Lê Thảo Ngân",
+        "phone": "0986267588",
+        "status": "present",
+        "note": ""
+    },
+    {
+        "id": 8,
+        "name": "Nguyễn Yến Nhi",
+        "phone": "0904692238",
+        "status": "present",
+        "note": ""
+    },
+    {
+        "id": 9,
+        "name": "Lê Thế Quang Minh",
+        "phone": "0986289268",
+        "status": "present",
+        "note": ""
+    },
+    {
+        "id": 10,
+        "name": "Trần Minh Vân",
+        "phone": "0984636941",
+        "status": "present",
+        "note": ""
+    },
+    {
+        "id": 11,
+        "name": "Lê Ngọc Khôi Nguyên",
+        "phone": "0936008127",
+        "status": "present",
+        "note": ""
+    },
+    {
+        "id": 12,
+        "name": "Phạm Bách Diệp",
+        "phone": "0944827284",
+        "status": "present",
+        "note": ""
+    },
+    {
+        "id": 13,
+        "name": "Trần Linh Đan (Sam)",
+        "phone": "0932688675",
+        "status": "present",
+        "note": ""
+    },
+    {
+        "id": 14,
+        "name": "Lê Bảo Sơn mẹ Ngọc",
+        "phone": "0903265409",
+        "status": "present",
+        "note": ""
+    },
+    {
+        "id": 15,
+        "name": "Nguyễn Đình Minh Quang",
+        "phone": "0979786105",
+        "status": "present",
+        "note": ""
+    },
+    {
+        "id": 16,
+        "name": "Nguyễn Nhật Nam 201",
+        "phone": "30914349267",
+        "status": "present",
+        "note": ""
+    },
+    {
+        "id": 17,
+        "name": "Nguyễn Ngọc Quỳnh",
+        "phone": "0986993026",
+        "status": "present",
+        "note": ""
+    },
+    {
+        "id": 18,
+        "name": "Nguyễn Quốc Bảo Nam",
+        "phone": "0973887192",
+        "status": "present",
+        "note": ""
+    },
+    {
+        "id": 19,
+        "name": "Ngô Thị Vân Khánh",
+        "phone": "0359909689",
+        "status": "present",
+        "note": ""
+    },
+    {
+        "id": 20,
+        "name": "Lê Hải Phong",
+        "phone": "0942721357",
+        "status": "present",
+        "note": ""
+    },
+    {
+        "id": 21,
+        "name": "Nguyễn Ngọc Linh",
+        "phone": "0912404292",
+        "status": "present",
+        "note": ""
+    },
+    {
+        "id": 22,
+        "name": "Nguyễn Đức Hoàng",
+        "phone": "0912404292",
+        "status": "present",
+        "note": ""
+    },
+    {
+        "id": 23,
+        "name": "Đặng Đức Kiên",
+        "phone": "0988678758",
+        "status": "present",
+        "note": ""
+    },
+    {
+        "id": 24,
+        "name": "Nguyễn Đức Hiếu",
+        "phone": "0363301991",
+        "status": "present",
+        "note": ""
+    },
+    {
+        "id": 25,
+        "name": "Nguyễn Thuỳ Chi",
+        "phone": "0333856999",
+        "status": "present",
+        "note": ""
+    }
+];
+let myClass = { name: "SUPER VIP", students: [] };
+function displayPhone(p) { if(!p || p==='Chưa có') return 'Chưa có'; let c = p.replace(/\s+/g, ''); if(c.length===10) return c.substring(0,4)+' '+c.substring(4,7)+' '+c.substring(7); return p; }
+function loadData() { const saved = localStorage.getItem('classData_SUPER%20VIP'); if(saved) { myClass.students = JSON.parse(saved); } else { myClass.students = defaultStudents; saveData(); } }
+function saveData() { localStorage.setItem('classData_SUPER%20VIP', JSON.stringify(myClass.students)); }
+window.onload = function() { loadData(); renderStudentList(); renderAbsentList(); updateStats(); };
+function updateStats() { const total = myClass.students.length; const absent = myClass.students.filter(s => s.status === 'absent').length; const present = total - absent; document.getElementById('classStats').innerText = 'Sĩ số: ' + total + ' | Có mặt: ' + present + ' | Vắng: ' + absent; }
+function addNewStudent() { const nameInput = document.getElementById('newStudentName'); const phoneInput = document.getElementById('newStudentPhone'); const name = nameInput.value.trim(); const phone = phoneInput.value.trim().replace(/\s+/g, '') || 'Chưa có'; if(name === '') { alert('Vui lòng nhập tên!'); return; } const nextId = myClass.students.length > 0 ? Math.max(...myClass.students.map(s => s.id)) + 1 : 1; myClass.students.push({ id: nextId, name: name, phone: phone, status: 'present', note: '' }); saveData(); nameInput.value = ''; phoneInput.value = ''; renderStudentList(); renderAbsentList(); updateStats(); }
+function deleteStudent(id, name) { if(confirm('Bạn có chắc chắn muốn XÓA học sinh ' + name + '?')) { myClass.students = myClass.students.filter(s => s.id !== id); myClass.students.forEach((s, idx) => { s.id = idx + 1; }); saveData(); renderStudentList(); renderAbsentList(); updateStats(); } }
+function renderStudentList() { const container = document.getElementById('studentList'); container.innerHTML = ''; myClass.students.forEach(student => { const card = document.createElement('div'); card.className = 'student-card status-' + student.status; const absentActive = student.status === 'absent' ? 'active' : ''; const presentActive = student.status === 'present' ? 'active' : ''; card.innerHTML = '<div class="student-info-row"><div class="student-meta"><span class="student-name">' + student.id + '. ' + student.name + '</span><span class="student-phone">SĐT: ' + displayPhone(student.phone) + '</span></div><div class="student-actions-right"><button class="btn-call" onclick="callStudent(\'' + student.phone + '\')">📞</button><button class="btn-delete" onclick="deleteStudent(' + student.id + ', \'' + student.name + '\')">🗑️</button></div></div><div class="student-controls-row"><button class="btn-action btn-absent ' + absentActive + '" onclick="updateStatus(' + student.id + ', \'absent\')">Vắng</button><button class="btn-action btn-present ' + presentActive + '" onclick="updateStatus(' + student.id + ', \'present\')">Đi Học</button><select class="note-select" onchange="updateNote(' + student.id + ', this.value)"><option value="" ' + (student.note===''?'selected':'') + '>-- Ghi chú --</option><option value="Không phép" ' + (student.note==='Không phép'?'selected':'') + '>Không phép</option><option value="Có phép" ' + (student.note==='Có phép'?'selected':'') + '>Có phép</option><option value="Muộn" ' + (student.note==='Muộn'?'selected':'') + '>Đi muộn</option><option value="Ốm" ' + (student.note==='Ốm'?'selected':'') + '>Ốm đau</option></select></div>'; container.appendChild(card); }); }
+function updateStatus(id, status) { const student = myClass.students.find(s => s.id === id); student.status = status; saveData(); renderStudentList(); renderAbsentList(); updateStats(); }
+function updateNote(id, value) { const student = myClass.students.find(s => s.id === id); student.note = value; saveData(); renderAbsentList(); }
+function renderAbsentList() { const listContainer = document.getElementById('absentList'); listContainer.innerHTML = ''; const absentStudents = myClass.students.filter(s => s.status === 'absent'); if(absentStudents.length === 0) { listContainer.innerHTML = '<li><em>Chưa có học sinh vắng</em></li>'; return; } absentStudents.forEach(s => { const li = document.createElement('li'); const noteText = s.note ? ' (' + s.note + ')' : ' (Chưa rõ lý do)'; li.innerText = '• ' + s.name + noteText; listContainer.appendChild(li); }); }
+function copyAbsentList() { const total = myClass.students.length; const absentStudents = myClass.students.filter(s => s.status === 'absent'); const absentCount = absentStudents.length; const presentCount = total - absentCount; let text = 'BÁO CÁO ĐIỂM DANH: ' + myClass.name + '\n'; text += 'Sĩ số: ' + total + ' (Có mặt: ' + presentCount + ' | Vắng: ' + absentCount + ')\n-------------------------\nDanh sách học sinh vắng mặt:\n'; if(absentCount === 0) { text += '- Không có học sinh vắng (Lớp đủ).'; } else { absentStudents.forEach((s, idx) => { const note = s.note ? ' (' + s.note + ')' : ''; text += (idx + 1) + '. ' + s.name + note + '\n'; }); } navigator.clipboard.writeText(text).then(() => { alert('Đã copy báo cáo lớp ' + myClass.name + '!'); }).catch(() => { alert('Lỗi copy.'); }); }
+function callStudent(phone) { if(phone === 'Chưa có') { alert('Chưa có SĐT!'); return; } window.location.href = 'tel:' + phone; }
+</script>
+</body>
+</html>
